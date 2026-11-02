@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-@Entity
+@Entity(name = "MainCategory")
 @Table(name = "category")
 public class Category {
 

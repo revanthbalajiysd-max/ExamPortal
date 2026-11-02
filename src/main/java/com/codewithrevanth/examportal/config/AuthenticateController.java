@@ -1,7 +1,7 @@
 package com.codewithrevanth.examportal.controller;
 
 import com.codewithrevanth.examportal.config.JwtUtils;
-import com.codewithrevanth.examportal.config.UserDetailsServiceImpl;
+import com.codewithrevanth.examportal.service.UserDetailsServiceImpl;
 import com.codewithrevanth.examportal.model.JwtRequest;
 import com.codewithrevanth.examportal.model.JwtResponse;
 import com.codewithrevanth.examportal.model.User;

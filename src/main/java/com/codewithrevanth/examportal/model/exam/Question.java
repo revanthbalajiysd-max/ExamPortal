@@ -2,7 +2,7 @@ package com.codewithrevanth.examportal.model.exam;
 
 import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "ExamQuestion")
 @Table(name = "question")
 public class Question {
 

@@ -74,7 +74,7 @@ public class QuestionController {
         int attempted = 0;
 
         for (Question q : questions) {
-            Question originalQuestion = this.questionService.getQuestion(q.getQuesId());
+            Question originalQuestion = this.questionService.getQuestion(q.getId());
 
             if (originalQuestion.getAnswer().equals(q.getGivenAnswer())) {
                 correctAnswers++;
