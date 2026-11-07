@@ -74,16 +74,24 @@ public class QuestionController {
         int attempted = 0;
 
         for (Question q : questions) {
-            Question originalQuestion = this.questionService.getQuestion(q.getId());
-
-            if (originalQuestion.getAnswer().equals(q.getGivenAnswer())) {
-                correctAnswers++;
-                double marksSingle = Double.parseDouble(questions.get(0).getQuiz().getMaxMarks()) / questions.size();
-                marksGot += marksSingle;
-            }
-
             if (q.getGivenAnswer() != null && !q.getGivenAnswer().trim().isEmpty()) {
                 attempted++;
+            }
+
+            Question originalQuestion = this.questionService.getQuestion(q.getId());
+
+            if (originalQuestion != null && originalQuestion.getAnswer() != null
+                    && originalQuestion.getAnswer().trim().equals(q.getGivenAnswer())) {
+                correctAnswers++;
+            }
+        }
+
+        if (!questions.isEmpty() && questions.get(0).getQuiz() != null && questions.get(0).getQuiz().getId() != null) {
+            Quiz quiz = this.quizService.getQuiz(questions.get(0).getQuiz().getId());
+            if (quiz != null && quiz.getMaxMarks() != null) {
+                double totalMaxMarks = Double.parseDouble(quiz.getMaxMarks());
+                double marksSingle = totalMaxMarks / questions.size();
+                marksGot = correctAnswers * marksSingle;
             }
         }
 

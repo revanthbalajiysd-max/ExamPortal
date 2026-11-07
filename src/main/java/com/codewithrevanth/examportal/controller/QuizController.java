@@ -16,7 +16,6 @@ public class QuizController {
     @Autowired
     private QuizService quizService;
 
-
     @PostMapping("/")
     public Quiz addQuiz(@RequestBody Quiz quiz) {
         return this.quizService.addQuiz(quiz);
@@ -36,6 +35,7 @@ public class QuizController {
     public Quiz getQuiz(@PathVariable("quizId") Long quizId) {
         return this.quizService.getQuiz(quizId);
     }
+
     @DeleteMapping("/{quizId}")
     public void deleteQuiz(@PathVariable("quizId") Long quizId) {
         this.quizService.deleteQuiz(quizId);

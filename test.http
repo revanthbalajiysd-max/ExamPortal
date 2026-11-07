@@ -1,0 +1,12 @@
+### 1. Login to get JWT Token
+POST http://localhost:8080/generate-token
+Content-Type: application/json
+
+{
+  "username": "Revanth",
+  "password": "revanth1981"
+}
+
+### 2. Get Categories (Using the Bearer Token)
+GET http://localhost:8080/category/
+Authorization: Bearer YOUR_GENERATED_TOKEN_HERE
