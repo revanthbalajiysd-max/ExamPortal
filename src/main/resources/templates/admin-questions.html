@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Questions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Manage Questions for: <span th:text="${quiz.title}" class="text-primary"></span></h2>
+        <a href="/view/admin" class="btn btn-secondary">Back to Admin Dashboard</a>
+    </div>
+
+    <!-- Add Question Form -->
+    <div class="card shadow-sm p-4 mb-4">
+        <h4>Add New Question</h4>
+        <form th:action="@{/view/admin/questions/save}" th:object="${question}" method="post">
+
+            <!-- Hidden input securely carries the qId without breaking the URL -->
+            <input type="hidden" name="qId" th:value="${qId}" />
+
+            <div class="mb-3">
+                <label class="form-label">Question Content</label>
+                <textarea class="form-control" th:field="*{content}" rows="3" required></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Option 1</label>
+                    <input type="text" class="form-control" th:field="*{option1}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Option 2</label>
+                    <input type="text" class="form-control" th:field="*{option2}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Option 3</label>
+                    <input type="text" class="form-control" th:field="*{option3}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Option 4</label>
+                    <input type="text" class="form-control" th:field="*{option4}" required>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Correct Answer</label>
+                <input type="text" class="form-control" th:field="*{answer}" placeholder="Enter exact text of the correct option" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Add Question</button>
+        </form>
+    </div>
+
+    <!-- Existing Questions Section -->
+    <div class="card shadow-sm p-4">
+        <h4>Existing Questions</h4>
+        <div th:if="${questions == null || questions.empty}" class="alert alert-info mt-3">
+            No questions added for this quiz yet.
+        </div>
+        <ul class="list-group mt-3" th:unless="${questions == null || questions.empty}">
+            <li th:each="q, stat : ${questions}" class="list-group-item mb-3 shadow-sm">
+                <strong th:text="'Q' + ${stat.count} + ': ' + ${q.content}"></strong>
+                <ul class="mt-2 mb-2">
+                    <li th:text="'1) ' + ${q.option1}"></li>
+                    <li th:text="'2) ' + ${q.option2}"></li>
+                    <li th:text="'3) ' + ${q.option3}"></li>
+                    <li th:text="'4) ' + ${q.option4}"></li>
+                </ul>
+                <p class="text-success mb-0"><strong>Correct Answer: </strong><span th:text="${q.answer}"></span></p>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>

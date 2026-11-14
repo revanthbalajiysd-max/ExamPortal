@@ -28,8 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        // This ensures the JWT filter completely skips public endpoints
-        return path.startsWith("/user") || path.equals("/generate-token");
+        return path.startsWith("/view/") || path.startsWith("/user") || path.equals("/generate-token");
     }
 
     @Override
@@ -49,15 +48,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 e.printStackTrace();
             }
         } else {
-            // Log if needed for debugging protected routes missing headers
-            // System.out.println("Jwt token does not start with Bearer");
         }
 
-        // Validate token only if username is present
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             final UserDetails userDetails = this.userDetailsServiceImpl.loadUserByUsername(username);
             if (this.jwtUtils.validateToken(jwtToken, userDetails)) {
-                // Token is valid -> Authenticate
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

@@ -5,12 +5,14 @@ import com.codewithrevanth.examportal.model.Quiz;
 import com.codewithrevanth.examportal.repository.QuizRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional; // Import Spring Transactional
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional // Ensures Hibernate session remains active for database operations here
 public class QuizServiceImpl implements QuizService {
 
     @Autowired
@@ -33,7 +35,12 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public Quiz getQuiz(Long quizId) {
-        return this.quizRepository.findById(quizId).orElse(null);
+        Quiz quiz = this.quizRepository.findById(quizId).orElse(null);
+        if (quiz != null) {
+            // Force initialization of questions collection while transaction session is open
+            quiz.getQuestions().size();
+        }
+        return quiz;
     }
 
     @Override
@@ -53,7 +60,6 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public Set<Quiz> getActiveQuizzesOfCategory(Category category) {
-        // Using Java Streams to filter quizzes belonging to a category that are active
         return this.quizRepository.findByCategory(category).stream()
                 .filter(Quiz::isActive)
                 .collect(Collectors.toSet());

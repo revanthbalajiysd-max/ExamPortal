@@ -1,5 +1,6 @@
 package com.codewithrevanth.examportal.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class Category {
     private String description;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Quiz> quizzes = new ArrayList<>();
 
     // Default constructor (required by Hibernate)
