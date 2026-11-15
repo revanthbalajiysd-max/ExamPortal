@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/view/") || path.startsWith("/user") || path.equals("/generate-token");
+        return path.startsWith("/view/") || path.startsWith("/user") || path.equals("/generate-token") || path.startsWith("/css/") || path.startsWith("/js/");
     }
 
     @Override

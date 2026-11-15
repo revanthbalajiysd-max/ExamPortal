@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/view")
@@ -26,6 +26,11 @@ public class ViewController {
 
     @Autowired
     private QuestionService questionService;
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
 
     @GetMapping("/admin")
     public String adminDashboard(Model model) {
@@ -86,6 +91,13 @@ public class ViewController {
         return "redirect:/view/admin/quiz/" + qId + "/questions";
     }
 
+    @PostMapping("/admin/quiz/{qId}/questions/delete/{questionId}")
+    public String deleteQuestion(@PathVariable("qId") Long qId,
+                                 @PathVariable("questionId") Long questionId) {
+        questionService.deleteQuestion(questionId);
+        return "redirect:/view/admin/quiz/" + qId + "/questions";
+    }
+
 
     @GetMapping("/student")
     public String studentRoot() {
@@ -123,7 +135,7 @@ public class ViewController {
             return "redirect:/view/student/dashboard";
         }
 
-        java.util.Set<Question> questions = questionService.getQuestionsOfQuiz(quizId);
+        Set<Question> questions = questionService.getQuestionsOfQuiz(quizId);
         int correctAnswers = 0;
         int totalQuestions = (questions != null) ? questions.size() : 0;
 

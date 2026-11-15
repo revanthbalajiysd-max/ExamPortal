@@ -4,23 +4,42 @@
     <meta charset="UTF-8">
     <title th:text="${quiz.title}">Take Quiz</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .timer-box {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<div class="container mt-5 mb-5">
-    <div class="card shadow-sm p-4 mb-4 bg-primary text-white">
-        <h2 th:text="${quiz.title}">Quiz Title</h2>
-        <p class="mb-0" th:text="${quiz.description}"></p>
+<div class="container mt-4 mb-5">
+
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm p-3 bg-primary text-white mb-0">
+                <h2 class="mb-1" th:text="${quiz.title}">Quiz Title</h2>
+                <p class="mb-0" th:text="${quiz.description}"></p>
+            </div>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="card shadow-sm p-3 bg-warning text-dark timer-box">
+                <h5 class="mb-0">⏳ Time Left: <span id="timer" class="fw-bold">10:00</span></h5>
+            </div>
+        </div>
     </div>
 
-    <form action="/view/student/quiz/submit" method="post">
+    <form id="quizForm" th:action="@{/view/student/quiz/submit}" method="post">
         <input type="hidden" name="quizId" th:value="${quiz.id}" />
+
+        <button type="submit" class="btn btn-success btn-lg w-100 mb-5">Submit Quiz</button>
 
         <div class="card shadow-sm p-4 mb-3" th:each="q, stat : ${questions}">
             <h5 class="text-secondary" th:text="'Q' + ${stat.count} + ': ' + ${q.content}">Question Content</h5>
 
             <div class="form-check mt-2">
-                <input class="form-check-input" type="radio" th:name="'question_' + ${q.id}" th:value="${q.option1}" th:id="'q' + ${q.id} + '_opt1'">
+                <input class="form-check-input" type="radio" th:name="'question_' + ${q.id}" th:value="${q.option1}" th:id="'q' + ${q.id} + '_opt1'" required>
                 <label class="form-check-label" th:for="'q' + ${q.id} + '_opt1'" th:text="${q.option1}"></label>
             </div>
             <div class="form-check mt-1">
@@ -40,6 +59,30 @@
         <button type="submit" class="btn btn-success btn-lg w-100">Submit Quiz</button>
     </form>
 </div>
+
+<script>
+
+    let timeLeft = 600;
+    const timerElement = document.getElementById("timer");
+    const quizForm = document.getElementById("quizForm");
+
+    const countdown = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        timerElement.textContent = minutes + ":" + seconds;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            alert("Time's up! Your quiz will be submitted automatically.");
+            quizForm.submit();
+        }
+        timeLeft--;
+    }, 1000);
+</script>
 
 </body>
 </html>

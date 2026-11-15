@@ -7,18 +7,16 @@
 </head>
 <body class="bg-light">
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Manage Questions for: <span th:text="${quiz.title}" class="text-primary"></span></h2>
         <a href="/view/admin" class="btn btn-secondary">Back to Admin Dashboard</a>
     </div>
 
-    <!-- Add Question Form -->
     <div class="card shadow-sm p-4 mb-4">
         <h4>Add New Question</h4>
         <form th:action="@{/view/admin/questions/save}" th:object="${question}" method="post">
 
-            <!-- Hidden input securely carries the qId without breaking the URL -->
             <input type="hidden" name="qId" th:value="${qId}" />
 
             <div class="mb-3">
@@ -54,7 +52,6 @@
         </form>
     </div>
 
-    <!-- Existing Questions Section -->
     <div class="card shadow-sm p-4">
         <h4>Existing Questions</h4>
         <div th:if="${questions == null || questions.empty}" class="alert alert-info mt-3">
@@ -62,14 +59,27 @@
         </div>
         <ul class="list-group mt-3" th:unless="${questions == null || questions.empty}">
             <li th:each="q, stat : ${questions}" class="list-group-item mb-3 shadow-sm">
-                <strong th:text="'Q' + ${stat.count} + ': ' + ${q.content}"></strong>
-                <ul class="mt-2 mb-2">
-                    <li th:text="'1) ' + ${q.option1}"></li>
-                    <li th:text="'2) ' + ${q.option2}"></li>
-                    <li th:text="'3) ' + ${q.option3}"></li>
-                    <li th:text="'4) ' + ${q.option4}"></li>
-                </ul>
-                <p class="text-success mb-0"><strong>Correct Answer: </strong><span th:text="${q.answer}"></span></p>
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong th:text="'Q' + ${stat.count} + ': ' + ${q.content}"></strong>
+                        <ul class="mt-2 mb-2">
+                            <li th:text="'1) ' + ${q.option1}"></li>
+                            <li th:text="'2) ' + ${q.option2}"></li>
+                            <li th:text="'3) ' + ${q.option3}"></li>
+                            <li th:text="'4) ' + ${q.option4}"></li>
+                        </ul>
+                        <p class="text-success mb-0">
+                            <strong>Correct Answer: </strong><span th:text="${q.answer}"></span>
+                        </p>
+                    </div>
+
+                    <!-- Delete Button -->
+                    <form th:action="@{'/view/admin/quiz/' + ${qId} + '/questions/delete/' + ${q.id}}"
+                          method="post"
+                          onsubmit="return confirm('Are you sure you want to delete this question?');">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
             </li>
         </ul>
     </div>

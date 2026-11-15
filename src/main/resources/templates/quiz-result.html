@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Results - Exam Portal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+
+<div class="container text-center">
+    <div class="card shadow-sm p-5 mx-auto" style="max-width: 600px;">
+        <h2 class="text-success mb-3">Exam Completed Successfully!</h2>
+        <p class="text-muted">You have finished the exam. Here are your final results:</p>
+
+        <h4 class="text-secondary mt-3" th:text="${quiz.title}">Quiz Title</h4>
+
+        <div class="my-4 p-3 bg-white border rounded shadow-sm">
+            <h3>Your Score: <span class="text-primary" th:text="${correctAnswers}">0</span> / <span th:text="${totalQuestions}">0</span></h3>
+            <p class="fs-5 text-muted mb-0" th:text="'Percentage: ' + ${scorePercentage} + '%'"></p>
+        </div>
+
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <a href="/view/student/dashboard" class="btn btn-primary">Back to Dashboard</a>
+            <form th:action="@{/logout}" method="post" class="m-0">
+                <button type="submit" class="btn btn-danger">Logout / Finish</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

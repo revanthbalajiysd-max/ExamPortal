@@ -60,19 +60,31 @@ public class MySecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/generate-token", "/user", "/user/", "/user/**", "/view/**", "/quiz/**", "/api/exam/**", "/logout").permitAll()
+                        .requestMatchers(
+                                "/generate-token",
+                                "/user",
+                                "/user/",
+                                "/user/**",
+                                "/view/**",
+                                "/quiz/**",
+                                "/api/exam/**",
+                                "/logout",
+                                "/view/student/quiz/submit",
+                                "/css/**",
+                                "/js/**"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/view/admin")
+                        .logoutSuccessUrl("/view/login?logout")
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .permitAll()
                 )
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)); // Changed from STATELESS to IF_REQUIRED
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
