@@ -2,7 +2,9 @@ package com.codewithrevanth.examportal.service;
 
 import com.codewithrevanth.examportal.model.Category;
 import com.codewithrevanth.examportal.model.Quiz;
+import com.codewithrevanth.examportal.model.QuizResult;
 
+import java.util.Map;
 import java.util.Set;
 
 public interface QuizService {
@@ -22,4 +24,6 @@ public interface QuizService {
     Set<Quiz> getActiveQuizzes();
 
     Set<Quiz> getActiveQuizzesOfCategory(Category category);
+
+    QuizResult evaluateAndSaveQuiz(Long qId, Map<Long, String> submittedAnswers, String username);
 }

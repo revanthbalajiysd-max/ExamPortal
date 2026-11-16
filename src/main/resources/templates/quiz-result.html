@@ -2,28 +2,67 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Exam Results - Exam Portal</title>
+    <title>Exam Result - Exam Portal</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center" style="height: 100vh;">
+<body class="bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
 
-<div class="container text-center">
-    <div class="card shadow-sm p-5 mx-auto" style="max-width: 600px;">
-        <h2 class="text-success mb-3">Exam Completed Successfully!</h2>
-        <p class="text-muted">You have finished the exam. Here are your final results:</p>
-
-        <h4 class="text-secondary mt-3" th:text="${quiz.title}">Quiz Title</h4>
-
-        <div class="my-4 p-3 bg-white border rounded shadow-sm">
-            <h3>Your Score: <span class="text-primary" th:text="${correctAnswers}">0</span> / <span th:text="${totalQuestions}">0</span></h3>
-            <p class="fs-5 text-muted mb-0" th:text="'Percentage: ' + ${scorePercentage} + '%'"></p>
+<div class="container py-5" style="max-width: 650px;">
+    <div class="card shadow border-0">
+        <div class="card-header text-center py-4"
+             th:classappend="${result.passed} ? 'bg-success text-white' : 'bg-danger text-white'">
+            <h2 class="mb-1" th:text="${result.passed} ? 'Congratulations! You Passed' : 'Exam Completed - Not Passed'">Result Status</h2>
+            <p class="mb-0 opacity-75" th:text="${quiz.title}">Quiz Title</p>
         </div>
 
-        <div class="d-flex justify-content-center gap-3 mt-3">
-            <a href="/view/student/dashboard" class="btn btn-primary">Back to Dashboard</a>
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-danger">Logout / Finish</button>
-            </form>
+        <div class="card-body p-4 text-center">
+            <!-- Score & Percentage Highlight -->
+            <div class="row g-3 my-2">
+                <div class="col-6">
+                    <div class="p-3 border rounded bg-white">
+                        <div class="text-muted small text-uppercase">Marks Obtained</div>
+                        <h3 class="text-primary mb-0">
+                            <span th:text="${result.obtainedMarks}">0</span> / <span th:text="${result.totalMarks}">0</span>
+                        </h3>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-3 border rounded bg-white">
+                        <div class="text-muted small text-uppercase">Percentage</div>
+                        <h3 class="mb-0"
+                            th:classappend="${result.passed} ? 'text-success' : 'text-danger'"
+                            th:text="${result.percentage} + '%'">0%</h3>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-bordered mt-4 text-start">
+                <tbody>
+                <tr>
+                    <th>Total Questions</th>
+                    <td th:text="${result.totalQuestions}">0</td>
+                </tr>
+                <tr>
+                    <th>Attempted Questions</th>
+                    <td th:text="${result.attemptedQuestions}">0</td>
+                </tr>
+                <tr class="table-success">
+                    <th>Correct Answers</th>
+                    <td th:text="${result.correctAnswers}">0</td>
+                </tr>
+                <tr class="table-danger">
+                    <th>Incorrect Answers</th>
+                    <td th:text="${result.incorrectAnswers}">0</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-center gap-3 mt-4">
+                <a href="/view/student/dashboard" class="btn btn-primary px-4">Back to Dashboard</a>
+                <form th:action="@{/logout}" method="post" class="m-0">
+                    <button type="submit" class="btn btn-outline-danger px-4">Logout</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

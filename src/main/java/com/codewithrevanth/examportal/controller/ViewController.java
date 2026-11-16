@@ -1,18 +1,21 @@
 package com.codewithrevanth.examportal.controller;
 
+import com.codewithrevanth.examportal.dto.QuizSubmissionDto;
 import com.codewithrevanth.examportal.model.Category;
 import com.codewithrevanth.examportal.model.Question;
 import com.codewithrevanth.examportal.model.Quiz;
+import com.codewithrevanth.examportal.model.QuizResult;
 import com.codewithrevanth.examportal.service.CategoryService;
 import com.codewithrevanth.examportal.service.QuestionService;
 import com.codewithrevanth.examportal.service.QuizService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @RequestMapping("/view")
@@ -98,7 +101,6 @@ public class ViewController {
         return "redirect:/view/admin/quiz/" + qId + "/questions";
     }
 
-
     @GetMapping("/student")
     public String studentRoot() {
         return "redirect:/view/student/dashboard";
@@ -106,7 +108,7 @@ public class ViewController {
 
     @GetMapping("/student/login")
     public String studentLogin() {
-        return "student-login";
+        return "login";
     }
 
     @GetMapping("/student/dashboard")
@@ -121,41 +123,30 @@ public class ViewController {
         if (quiz == null) {
             return "redirect:/view/student/dashboard";
         }
+
+        List<Question> questions = new ArrayList<>(questionService.getQuestionsOfQuiz(qId));
+
         model.addAttribute("quiz", quiz);
-        model.addAttribute("questions", questionService.getQuestionsOfQuiz(qId));
+        model.addAttribute("questions", questions);
+        model.addAttribute("submission", new QuizSubmissionDto());
         return "take-quiz";
     }
 
-    @PostMapping("/student/quiz/submit")
-    public String submitQuiz(@RequestParam("quizId") Long quizId,
-                             HttpServletRequest request,
-                             Model model) {
-        Quiz quiz = quizService.getQuiz(quizId);
+    @PostMapping("/quiz/eval/{qId}")
+    public String evaluateQuiz(@PathVariable("qId") Long qId,
+                               @ModelAttribute("submission") QuizSubmissionDto submission,
+                               Principal principal,
+                               Model model) {
+        Quiz quiz = quizService.getQuiz(qId);
         if (quiz == null) {
             return "redirect:/view/student/dashboard";
         }
 
-        Set<Question> questions = questionService.getQuestionsOfQuiz(quizId);
-        int correctAnswers = 0;
-        int totalQuestions = (questions != null) ? questions.size() : 0;
+        String username = (principal != null) ? principal.getName() : "Guest Student";
+        QuizResult result = quizService.evaluateAndSaveQuiz(qId, submission.getAnswers(), username);
 
-        if (questions != null) {
-            for (Question q : questions) {
-                String selectedOption = request.getParameter("question_" + q.getId());
-                if (selectedOption != null && q.getAnswer() != null &&
-                        selectedOption.trim().equalsIgnoreCase(q.getAnswer().trim())) {
-                    correctAnswers++;
-                }
-            }
-        }
-
-        int scorePercentage = (totalQuestions > 0) ? (correctAnswers * 100) / totalQuestions : 0;
-
-        model.addAttribute("quiz", quiz);
-        model.addAttribute("correctAnswers", correctAnswers);
-        model.addAttribute("totalQuestions", totalQuestions);
-        model.addAttribute("scorePercentage", scorePercentage);
-
+        model.addAttribute("result", result);
+        model.addAttribute("quiz", result.getQuiz());
         return "quiz-result";
     }
 
