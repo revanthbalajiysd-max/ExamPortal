@@ -1,5 +1,6 @@
 package com.codewithrevanth.examportal.service;
 
+import com.codewithrevanth.examportal.dto.QuizAnalyticsDto;
 import com.codewithrevanth.examportal.model.Category;
 import com.codewithrevanth.examportal.model.Question;
 import com.codewithrevanth.examportal.model.Quiz;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +83,6 @@ public class QuizServiceImpl implements QuizService {
         Collection<Question> questions = quiz.getQuestions();
         int totalQuestions = (questions != null) ? questions.size() : 0;
 
-        // Parse maxMarks from Quiz (defaults to total number of questions if null/empty)
         double totalMarks = totalQuestions;
         try {
             if (quiz.getMaxMarks() != null && !quiz.getMaxMarks().isBlank()) {
@@ -124,5 +125,58 @@ public class QuizServiceImpl implements QuizService {
         result.setPassed(passed);
 
         return quizResultRepository.save(result);
+    }
+
+    @Override
+    public QuizAnalyticsDto getQuizAnalytics(Long qId) {
+        List<QuizResult> results = this.quizResultRepository.findByQuizIdOrderBySubmittedAtDesc(qId);
+
+        QuizAnalyticsDto analytics = new QuizAnalyticsDto();
+        analytics.setResults(results);
+
+        int total = results.size();
+        analytics.setTotalAttempts(total);
+
+        if (total == 0) {
+            return analytics;
+        }
+
+        double sumMarks = 0.0;
+        double sumPercentage = 0.0;
+        double highest = 0.0;
+        int passed = 0;
+
+        for (QuizResult r : results) {
+            sumMarks += r.getObtainedMarks();
+            sumPercentage += r.getPercentage();
+            if (r.getObtainedMarks() > highest) {
+                highest = r.getObtainedMarks();
+            }
+            if (r.isPassed()) {
+                passed++;
+            }
+        }
+
+        int failed = total - passed;
+        analytics.setAverageMarks(Math.round((sumMarks / total) * 100.0) / 100.0);
+        analytics.setAveragePercentage(Math.round((sumPercentage / total) * 100.0) / 100.0);
+        analytics.setHighestMarks(highest);
+        analytics.setPassedCount(passed);
+        analytics.setFailedCount(failed);
+        analytics.setPassRate(Math.round(((passed * 100.0) / total) * 100.0) / 100.0);
+
+        return analytics;
+    }
+
+    @Override
+    public List<QuizResult> getStudentHistory(String username) {
+        String targetUser = (username != null && !username.isBlank()) ? username : "Guest Student";
+        List<QuizResult> history = this.quizResultRepository.findByUsernameOrderBySubmittedAtDesc(targetUser);
+        for (QuizResult r : history) {
+            if (r.getQuiz() != null) {
+                Hibernate.initialize(r.getQuiz());
+            }
+        }
+        return history;
     }
 }

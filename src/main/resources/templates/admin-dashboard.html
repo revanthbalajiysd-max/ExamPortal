@@ -63,7 +63,7 @@
             <tr>
                 <th>Title</th>
                 <th>Description</th>
-                <th>Action</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -71,7 +71,10 @@
                 <td th:text="${q.title}"></td>
                 <td th:text="${q.description}"></td>
                 <td>
-                    <a th:href="@{'/view/admin/quiz/' + ${q.id} + '/questions'}" class="btn btn-info btn-sm">Manage Questions</a>
+                    <div class="d-flex gap-2">
+                        <a th:href="@{'/view/admin/quiz/' + ${q.id} + '/questions'}" class="btn btn-info btn-sm text-white">Manage Questions</a>
+                        <a th:href="@{'/view/admin/quiz/' + ${q.id} + '/results'}" class="btn btn-warning btn-sm text-dark">View Results</a>
+                    </div>
                 </td>
             </tr>
             </tbody>

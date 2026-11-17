@@ -1,5 +1,6 @@
 package com.codewithrevanth.examportal.controller;
 
+import com.codewithrevanth.examportal.dto.QuizAnalyticsDto;
 import com.codewithrevanth.examportal.dto.QuizSubmissionDto;
 import com.codewithrevanth.examportal.model.Category;
 import com.codewithrevanth.examportal.model.Question;
@@ -101,6 +102,19 @@ public class ViewController {
         return "redirect:/view/admin/quiz/" + qId + "/questions";
     }
 
+    @GetMapping("/admin/quiz/{qId}/results")
+    public String viewQuizResults(@PathVariable("qId") Long qId, Model model) {
+        Quiz quiz = quizService.getQuiz(qId);
+        if (quiz == null) {
+            return "redirect:/view/admin";
+        }
+
+        QuizAnalyticsDto analytics = quizService.getQuizAnalytics(qId);
+        model.addAttribute("quiz", quiz);
+        model.addAttribute("analytics", analytics);
+        return "admin-results";
+    }
+
     @GetMapping("/student")
     public String studentRoot() {
         return "redirect:/view/student/dashboard";
@@ -112,8 +126,12 @@ public class ViewController {
     }
 
     @GetMapping("/student/dashboard")
-    public String studentDashboard(Model model) {
+    public String studentDashboard(Principal principal, Model model) {
+        String username = (principal != null) ? principal.getName() : "Guest Student";
+
+        model.addAttribute("username", username);
         model.addAttribute("quizzes", quizService.getQuizzes());
+        model.addAttribute("history", quizService.getStudentHistory(username));
         return "student-dashboard";
     }
 
